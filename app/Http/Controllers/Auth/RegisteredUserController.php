@@ -40,34 +40,38 @@ class RegisteredUserController extends Controller
             'role' => 'required|string|in:Distributeur,Client',
             'photo' => 'nullable|image|max:2048', // Taille maximale de 2MB
         ]);
-        
+
+        // Vérifiez si le numéro de téléphone existe déjà
+        $telephone = $request->input('telephone');
+        if ($telephone && User::where('telephone', $telephone)->exists()) {
+            return redirect()->back()->withErrors(['telephone' => 'Ce numéro de téléphone est déjà utilisé.'])->withInput();
+        }
+
         // Gestion de la photo ou de l'avatar par défaut
         $photoPath = $request->file('photo') 
             ? $request->file('photo')->store('photos', 'public') 
             : 'default-avatar.png'; // Avatar par défaut
-    
+
         // Création de l'utilisateur avec la photo ou l'avatar par défaut
         $user = User::create([
             'nom' => $request->nom,
             'prenom' => $request->prenom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'telephone' => $request->telephone,
+            'telephone' => $telephone,
             'cin' => $request->cin,
             'date_naissance' => $request->date_naissance,
             'adresse' => $request->adresse,
             'role' => $request->role,
             'photo' => $photoPath, // On utilise la photo ou l'avatar par défaut ici
         ]);
-    
+
         // Événement d'inscription
         event(new Registered($user));
-    
+
         // Connexion automatique de l'utilisateur
         Auth::login($user);
-    
+
         return redirect()->route('dashboard')->with('success', 'Inscription réussie.');
     }
-    
-
 }

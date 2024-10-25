@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('prenom');
-            $table->string('telephone');
+            $table->string('telephone')->unique(); // Ajoute la contrainte d'unicité
             $table->string('cin');
             $table->date('date_naissance');
             $table->string('adresse');

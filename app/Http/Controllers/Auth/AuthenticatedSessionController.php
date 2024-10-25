@@ -24,8 +24,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // Essayer d'authentifier l'utilisateur
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            // Si l'authentification échoue, rediriger avec un message d'erreur
+            return redirect()->back()->with('login_error', 'Email ou mot de passe saisi invalide.');
+        }
 
+        // Si l'authentification réussit
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
@@ -39,7 +44,6 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');
