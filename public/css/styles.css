@@ -15,7 +15,26 @@ body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
 }
+
+.solde-display {
+    font-size: 2em; /* Augmente la taille de la police */
+    color: #4CAF50; /* Couleur verte pour le solde */
+    font-weight: bold; /* Met le texte en gras */
+    text-align: center; /* Centre le texte */
+    margin: 20px 0; /* Ajoute un espace autour */
+
+}
+
+#solde-display {
+    font-weight: bold; /* Mettre le montant en gras */
+}
+
+#btn-toggle-solde {
+    cursor: pointer; /* Changer le curseur sur le bouton */
+}
+
 
 h1 {
     color: #333;
@@ -162,9 +181,9 @@ transition: all 0.3s ease;
     margin: 20px auto; /* centrer horizontalement */
     transition: transform 0.3s ease;
     width: 80%;
-    max-width: 1200px;
+    max-width: 1145px;
     padding: 20px;
-    margin-right: 450px; /* ajouter une marge à gauche */
+    margin-left: 425px; /* ajouter une marge à gauche */
 }
 .card-header {
     background-color: #6DD5ED;
