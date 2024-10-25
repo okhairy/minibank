@@ -1,0 +1,15 @@
+[90m= [39m[34;4mApp\Models\Distributeur[39;24m {#6005
+    [34mid[39m: [35m5[39m,
+    [34mnom[39m: "[32mFatou[39m",
+    [34mprenom[39m: "[32mDiarra[39m",
+    [34memail[39m: "[32mfatou12@gmail.com[39m",
+    #[33mpassword[39m: "[32m$2y$12$39hDeVraJAkObzFqrG9sMuL/sYUPftvr1DEFey5i0NQnPX/ZOGWwy[39m",
+    [34mnumero_telephone[39m: "[32m1234567890[39m",
+    [34mphoto[39m: "[32mchemin/vers/photo.jpg[39m",
+    [34mnumero_compte[39m: "[32m12345678[39m",
+    [34mdate_naissance[39m: "[32m1990-01-01[39m",
+    [34msolde[39m: "[32m0.00[39m",
+    [34mcreated_at[39m: "[32m2024-10-25 13:10:25[39m",
+    [34mupdated_at[39m: "[32m2024-10-25 13:10:25[39m",
+  }
+
