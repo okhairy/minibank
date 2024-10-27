@@ -16,6 +16,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:dis
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
+use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -53,5 +54,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Auth routes
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{id}', [UserController::class, 'show']);
 require __DIR__.'/auth.php';
 
