@@ -2,19 +2,20 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Correct
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable;
 
     /**
-     * Les attributs qui peuvent être assignés en masse.
+     * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'nom',
@@ -27,14 +28,12 @@ class User extends Authenticatable
         'photo',
         'email',
         'password',
-        'account_number', // Assurez-vous que ce champ existe dans la base de données
-        'balance',        // Assurez-vous que ce champ existe dans la base de données
     ];
 
     /**
-     * Les attributs qui devraient être cachés pour les tableaux.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -42,54 +41,18 @@ class User extends Authenticatable
     ];
 
     /**
-     * Les attributs à muter.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'balance' => 'decimal:2', // Assurez-vous que le solde est stocké en tant que décimal
-    ];
-
-    /**
-     * Relation avec le modèle Transaction.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function transactions()
+    protected function casts(): array
     {
-        return $this->hasMany(Transaction::class);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
     
     
-    /**
-     * Générer un numéro de compte unique.
-     *
-     * @return string
-     */
-    public static function generateAccountNumber()
-    {
-        // Générer un numéro de compte unique
-        return strtoupper(uniqid('ACC'));
-    }
-
-    /**
-     * Mutateur pour le mot de passe.
-     *
-     * @param string $password
-     */
-    public function setPasswordAttribute($password)
-    {
-        $this->attributes['password'] = bcrypt($password);
-    }
-    // Dans le modèle User
-public static function findByAccountNumber($accountNumber)
-{
-    return self::where('account_number', $accountNumber)->first();
-}
-public function destinataire()
-{
-    return $this->belongsTo(User::class, 'destinataire_id');  // ou utilisez la clé étrangère appropriée
-}
 }
