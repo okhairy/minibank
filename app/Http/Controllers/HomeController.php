@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Transaction;
+use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
@@ -16,32 +16,33 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            $user = auth()->user();
-
-            if (!$user) {
-                return redirect()->route('login')->withErrors(['error' => 'Veuillez vous connecter.']);
-            }
-
-            $transactions = Transaction::with('user')
+            $user = auth()->user(); // Supposons que l'utilisateur est déjà authentifié
+    
+            // Récupérer les transactions de l'utilisateur
+            $transactions = Transactions::with('user')
                 ->where('user_id', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
-
-            $totalDepot = Transaction::where('user_id', $user->id)
+    
+            // Calculer les totaux
+            $totalDepot = Transactions::where('user_id', $user->id)
                 ->where('type', 'Dépôt')
                 ->sum('montant');
-
-            $totalRetrait = Transaction::where('user_id', $user->id)
+    
+            $totalRetrait = Transactions::where('user_id', $user->id)
                 ->where('type', 'Envoi')
                 ->sum('montant');
-
+    
+            // Récupérer le solde et le numéro de compte
             $balance = $user->balance;
             $accountNumber = $user->account_number;
             $qrCodeUrl = QrCode::format('png')->size(300)->generate($accountNumber);
-
+    
+            // Retourner la vue avec les données
             return view('home', compact('transactions', 'totalDepot', 'totalRetrait', 'balance', 'qrCodeUrl'));
-
+    
         } catch (Exception $e) {
+            // Gérer les exceptions et retourner une erreur
             return back()->withErrors(['error' => 'Erreur lors du chargement de la page.']);
         }
     }
@@ -88,7 +89,7 @@ class HomeController extends Controller
         $recipient->save();
 
         // Enregistrer la transaction
-        Transaction::create([
+        Transactions::create([
             'user_id' => $user->id,
             'type' => 'Envoi', // Type de transaction
             'montant' => $amount,
