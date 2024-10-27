@@ -61,10 +61,8 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-<<<<<<< HEAD
     
     
-=======
     /**
      * Générer un numéro de compte unique.
      *
@@ -94,5 +92,4 @@ public function destinataire()
 {
     return $this->belongsTo(User::class, 'destinataire_id');  // ou utilisez la clé étrangère appropriée
 }
->>>>>>> 5c4681e9d94de6ca7cf2b9c21268b363c496eb1a
 }
