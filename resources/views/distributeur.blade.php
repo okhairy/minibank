@@ -32,9 +32,14 @@
     <a href="#" id="profil-link">
         <i class="fas fa-user"></i> Profil du distributeur
     </a>
-    <a href="{{ url('/logout') }}">
-        <i class="fas fa-sign-out-alt"></i> Déconnexion
-    </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+
+        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i>
+            Se déconnecter
+        </a>
+
 </div>
 
 <div class="content">

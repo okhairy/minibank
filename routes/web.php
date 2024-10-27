@@ -6,15 +6,20 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DistributeurController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:distributeur');
+// Auth routes
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{id}', [UserController::class, 'show']);
 
 // Route pour l'inscription
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,6 +57,6 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Auth routes
+
 require __DIR__.'/auth.php';
 
