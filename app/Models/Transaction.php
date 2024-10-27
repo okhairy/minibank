@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Transaction extends Model
+{
+    protected $fillable = [
+        'compte_id',
+        'montant',
+        'type',
+        'description',
+        'status', // Assurez-vous d'inclure 'status' dans les champs remplissables
+    ];
+
+    // Définir les constantes pour les statuts
+    const STATUS_EN_ATTENTE = 'en_attente';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CANCELLED = 'cancelled';
+
+    public function compte()
+    {
+        return $this->belongsTo(Compte::class);
+    }
+
+}
