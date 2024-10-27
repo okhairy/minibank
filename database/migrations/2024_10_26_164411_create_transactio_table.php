@@ -4,11 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransactionsTable extends Migration
+class CreatetransactioTable extends Migration
 {
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('transactio', function (Blueprint $table) {
             $table->id(); // Crée une colonne id auto-incrémentée
             $table->unsignedBigInteger('user_id'); // Colonne user_id
             $table->enum('type', ['Dépôt', 'Envoi', 'Retrait', 'Annulé']); // Type de transaction
@@ -25,6 +25,6 @@ class CreateTransactionsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('transactions'); // Supprime la table transactions
+        Schema::dropIfExists('transactio'); // Supprime la table transactions
     }
 }

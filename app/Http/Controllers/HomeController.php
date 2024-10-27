@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\User;
-use App\Models\Transaction;
+use App\Models\transactio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
@@ -22,16 +20,16 @@ class HomeController extends Controller
                 return redirect()->route('login')->withErrors(['error' => 'Veuillez vous connecter.']);
             }
 
-            $transactions = Transaction::with('user')
+            $transactio = transactio::with('user')
                 ->where('user_id', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
-            $totalDepot = Transaction::where('user_id', $user->id)
+            $totalDepot = transactio::where('user_id', $user->id)
                 ->where('type', 'Dépôt')
                 ->sum('montant');
 
-            $totalRetrait = Transaction::where('user_id', $user->id)
+            $totalRetrait = transactio::where('user_id', $user->id)
                 ->where('type', 'Envoi')
                 ->sum('montant');
 
@@ -39,7 +37,7 @@ class HomeController extends Controller
             $accountNumber = $user->account_number;
             $qrCodeUrl = QrCode::format('png')->size(300)->generate($accountNumber);
 
-            return view('home', compact('transactions', 'totalDepot', 'totalRetrait', 'balance', 'qrCodeUrl'));
+            return view('home', compact('transactio', 'totalDepot', 'totalRetrait', 'balance', 'qrCodeUrl'));
 
         } catch (Exception $e) {
             return back()->withErrors(['error' => 'Erreur lors du chargement de la page.']);
@@ -88,7 +86,7 @@ class HomeController extends Controller
         $recipient->save();
 
         // Enregistrer la transaction
-        Transaction::create([
+        transactio::create([
             'user_id' => $user->id,
             'type' => 'Envoi', // Type de transaction
             'montant' => $amount,
