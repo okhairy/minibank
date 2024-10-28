@@ -10,15 +10,26 @@
     @endif
 
     <!-- Affichage du solde -->
-    
+    @if (auth()->check())
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Votre Solde</h2>
+            <p class="text-3xl font-semibold" style="color: #40AEC9; font-weight: 600;">
+                {{ number_format(auth()->user()->solde, 0, ' ', ' ') }} Fcfa
+            </p>
+        </div>
+    @else
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Veuillez vous connecter pour voir votre solde.</h2>
+        </div>
+    @endif
 
     <!-- Historique des Transactions -->
     <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 class="text-2xl font-bold mb-4">Historique des transactions</h2>
         <div class="mb-4">
-        <a href="{{ route('deposit.page') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            <i class="fas fa-plus mr-2"></i> Effectuer un dépôt
-        </a>
+            <a href="{{ route('deposit.page') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                <i class="fas fa-plus mr-2"></i> Effectuer un dépôt
+            </a>
         </div>
         <div class="overflow-x-auto">
             <table class="custom-table">
@@ -74,7 +85,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <style>
@@ -111,9 +121,65 @@
             // Masquer le message après 5 secondes (5000 ms)
             setTimeout(() => {
                 successMessage.style.display = 'none';
-            }, 1000);
+            }, 5000);
         }
     });
+
+    // script.js
+function effectuerDepot(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Afficher un indicateur de chargement si nécessaire
+    document.getElementById('loading').style.display = 'block';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mettre à jour le solde affiché
+            document.querySelectorAll('.solde-compte').forEach(element => {
+                element.textContent = data.nouveau_solde_formate;
+            });
+            
+            // Afficher un message de succès
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès!',
+                text: data.message
+            });
+            
+            // Optionnel : réinitialiser le formulaire
+            form.reset();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors du dépôt.'
+        });
+    })
+    .finally(() => {
+        // Cacher l'indicateur de chargement
+        document.getElementById('loading').style.display = 'none';
+    });
+}
 </script>
 @endsection
 
