@@ -17,7 +17,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        'nom',
+        'prenom',
+        'telephone',
+        'cin',
+        'date_naissance',
+        'adresse',
+        'role',
+        'photo',
         'email',
         'password',
         'account_number', // Assurez-vous que ce champ existe dans la base de données
@@ -83,4 +90,6 @@ public function destinataire()
 {
     return $this->belongsTo(User::class, 'destinataire_id');  // ou utilisez la clé étrangère appropriée
 }
+    
+    
 }
