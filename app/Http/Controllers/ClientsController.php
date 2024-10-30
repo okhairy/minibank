@@ -2,47 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Transactions;
+use App\Models\User; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Clients; // Assurez-vous que vous utilisez le bon modèle
+use App\Models\Transactionn; // Importez le modèle Transactionn
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Exception;
 
-class HomeController extends Controller
+class ClientsController extends Controller
 {
+    public function dashboard()
+    {
+        $client = Auth::user(); // Supposons que le client est connecté
+
+        // Récupérer les transactions récentes
+        $transactions = $client->transactionns()->latest()->take(5)->get(); // Remplacez transactions par transactionns
+
+        // Récupérer le solde
+        $solde = $client->balance; // Assurez-vous que la propriété 'balance' existe dans votre modèle Client
+
+        // Vérifiez que le numéro de compte n'est pas null
+        $accountNumber = $client->numero_compte;
+
+        $qrCodeUrl = null; // Initialiser la variable QR code
+        if ($accountNumber) {
+            $qrCode = QrCode::size(100)->generate($accountNumber);
+            $qrCodeUrl = base64_encode($qrCode);
+        }
+
+        return view('clients.dashboard', compact('client', 'transactions', 'qrCodeUrl', 'solde'));
+    }
+
     public function index()
     {
         try {
-            $user = auth()->user(); // Supposons que l'utilisateur est déjà authentifié
-    
-            // Récupérer les transactions de l'utilisateur
-            $transactions = Transactions::with('user')
+            $user = auth()->user();
+
+            if (!$user) {
+                return redirect()->route('login')->withErrors(['error' => 'Veuillez vous connecter.']);
+            }
+
+            // Récupérer les transactions et les totaux
+            $transactions = Transactionn::with('user')
                 ->where('user_id', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
-    
-            // Calculer les totaux
-            $totalDepot = Transactions::where('user_id', $user->id)
+
+            $totalDepot = Transactionn::where('user_id', $user->id)
                 ->where('type', 'Dépôt')
                 ->sum('montant');
-    
-            $totalRetrait = Transactions::where('user_id', $user->id)
+
+            $totalRetrait = Transactionn::where('user_id', $user->id)
                 ->where('type', 'Envoi')
                 ->sum('montant');
-    
-            // Récupérer le solde et le numéro de compte
-            $balance = $user->balance;
+
+            // Récupérer le solde
+            $balance = $user->balance; // Assurez-vous que la propriété 'balance' existe dans votre modèle User
             $accountNumber = $user->account_number;
             $qrCodeUrl = QrCode::format('png')->size(300)->generate($accountNumber);
-    
-            // Retourner la vue avec les données
-            return view('home', compact('transactions', 'totalDepot', 'totalRetrait', 'balance', 'qrCodeUrl'));
-    
+
+            return view('clients.dashboard', compact('transactions', 'totalDepot', 'totalRetrait', 'balance', 'qrCodeUrl'));
         } catch (Exception $e) {
-            // Gérer les exceptions et retourner une erreur
+            Log::error('Erreur lors du chargement de la page: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Erreur lors du chargement de la page.']);
         }
     }
@@ -89,11 +112,10 @@ class HomeController extends Controller
         $recipient->save();
 
         // Enregistrer la transaction
-        Transactions::create([
+        Transactionn::create([
             'user_id' => $user->id,
             'type' => 'Envoi', // Type de transaction
             'montant' => $amount,
-            'fee' => 0.00, // Vous pouvez ajouter des frais si nécessaire
             'destinataire' => $recipient->account_number,
             'sender_name' => $user->name, // Assurez-vous que le champ 'name' existe dans votre modèle User
         ]);
@@ -106,6 +128,6 @@ class HomeController extends Controller
         ]);
 
         // Rediriger avec un message de succès
-        return redirect()->route('home')->with('message', 'Transfert effectué avec succès.');
+        return redirect()->route('clients.dashboard')->with('message', 'Transfert effectué avec succès.');
     }
 }

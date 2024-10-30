@@ -48,8 +48,8 @@
 
         <!-- Afficher le solde du distributeur -->
         <div class="alert alert-info">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="solde-display d-flex align-items-center">
+         <div class="d-flex justify-content-between align-items-center">
+         <div class="solde-display d-flex align-items-center">
             <span>Solde du distributeur :</span>
             <span id="solde-display" class="ml-2">{{ $distributeur->solde }} FCFA</span>
             <button class="btn btn-secondary btn-sm ml-2" id="btn-toggle-solde">
@@ -134,9 +134,37 @@
                         <label for="nom">Nom :</label>
                         <input type="text" id="nom" name="nom" class="form-control" value="{{ $distributeur->nom }}">
                     </div>
+                    <div class="form-group">
+    <label for="date_naissance">Date de naissance:</label>
+    <input type="date" id="date_naissance" name="date_naissance" class="form-control" value="{{ $distributeur->date_naissance }}" required>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateNaissanceInput = document.getElementById("date_naissance");
+        const today = new Date();
+        const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+        // Définir la date maximale pour le champ date (aujourd'hui)
+        dateNaissanceInput.setAttribute("max", today.toISOString().split("T")[0]);
+
+        // Vérification lors de la soumission du formulaire
+        dateNaissanceInput.addEventListener("change", function() {
+            const selectedDate = new Date(this.value);
+            if (selectedDate > minDate) {
+                alert("Vous devez avoir au moins 18 ans.");
+                this.value = ""; // Réinitialiser le champ
+            }
+        });
+    });
+</script>
                     <!-- Champ pour l'email du distributeur -->
                     <div class="form-group">
-                        <label for="email">prenom :</label>
+                        <label for="prenom">prenom :</label>
+                        <input type="text" id="prenom" name="prenom" class="form-control" value="{{ $distributeur->prenom }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">email :</label>
                         <input type="email" id="email" name="email" class="form-control" value="{{ $distributeur->email }}">
                     </div>
                     <!-- Champ pour le solde (non modifiable) -->
@@ -191,6 +219,7 @@
         </div>
 
     </div>
+    
     <!-- Modal pour Créditer un compte -->
 <div class="modal fade" id="modal-crediter" tabindex="-1" role="dialog" aria-labelledby="crediterModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -291,6 +320,7 @@
     @endif
 });
 </script>
+
     <script>
        
 

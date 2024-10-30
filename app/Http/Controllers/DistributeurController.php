@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class DistributeurController extends Controller
 {
+    public function getTransactions()
+{
+    $distributeur = Distributeur::find(auth()->id());
+    $transactions = Transaction::where('distributeur_id', $distributeur->id)->latest()->get();
+
+    return response()->json($transactions);
+}
     public function crediterCompte(Request $request)
     {
         // Validation des données d'entrée
@@ -18,22 +25,22 @@ class DistributeurController extends Controller
             'montant' => 'required|numeric|min:0',
             'distributeur_id' => 'required|integer|exists:distributeurs,id',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-    
+
         $distributeur = Distributeur::find($request->distributeur_id);
         $client = Client::where('numero_compte', $request->numero_compte)->first();
-    
+
         if ($client && !$client->bloque) {
             DB::transaction(function () use ($client, $distributeur, $request) {
                 $montant = $request->montant;
-    
-                // Ajouter le montant au compte du client
-                $client->solde += $montant;
-                $client->save();
-    
+
+                // Ajouter le montant au solde du distributeur
+                $distributeur->solde += $montant;
+                $distributeur->save();
+
                 // Enregistrer la transaction
                 Transaction::create([
                     'distributeur_id' => $distributeur->id,
@@ -42,19 +49,28 @@ class DistributeurController extends Controller
                     'type' => 'depot',
                 ]);
             });
-    
-            return redirect()->back()->with('success', 'Compte crédité avec succès !');
+
+            return response()->json([
+                'status' => 'success',
+                'modal' => 'crediter',
+                'message' => 'Compte crédité avec succès !',
+            ]);
         }
     
-        return redirect()->back()->with('error', 'Compte non trouvé ou bloqué !');
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Compte non trouvé ou bloqué !'
+        ], 404);
+    
     }
+  
     public function retirerCompte(Request $request)
     {
         // Validation des données d'entrée
         $validator = Validator::make($request->all(), [
             'numero_compte' => 'required|string',
             'montant' => 'required|numeric|min:0',
-            'distributeur_id' => 'required|integer|exists:distributeurs,id', // Vérifier que l'ID existe
+            'distributeur_id' => 'required|integer|exists:distributeurs,id',
         ]);
 
         if ($validator->fails()) {
@@ -68,9 +84,13 @@ class DistributeurController extends Controller
             DB::transaction(function () use ($client, $distributeur, $request) {
                 $montant = $request->montant;
 
-                // Débiter le montant du compte du client
+                // Retirer le montant du solde du client
                 $client->solde -= $montant;
                 $client->save();
+
+                // Diminuer le solde du distributeur
+                $distributeur->solde -= $montant;
+                $distributeur->save();
 
                 // Enregistrer la transaction
                 Transaction::create([
@@ -83,7 +103,8 @@ class DistributeurController extends Controller
 
             return response()->json([
                 'message' => 'Retrait effectué avec succès !',
-                'nouveau_solde' => $distributeur->solde,
+                'nouveau_solde_distributeur' => $distributeur->solde,
+                'nouveau_solde_client' => $client->solde,
             ]);
         }
 
@@ -153,4 +174,15 @@ class DistributeurController extends Controller
         // Retourner la vue 'distributeur' avec les données nécessaires
         return view('distributeur', compact('transactions', 'distributeur'));
     }
+    public function store(Request $request)
+{
+    // Validation
+    $request->validate([
+        'date_naissance' => 'required|date|before:' . now()->subYears(18)->toDateString(),
+    ]);
+
+    // Logique pour enregistrer le distributeur ou d'autres actions
+}
+
+
 }

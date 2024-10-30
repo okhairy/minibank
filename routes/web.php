@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DistributeurController;
-use App\Http\Controllers\HomeController;
+
 //routes/agents
 use App\Http\Controllers\CompteController;
 use App\Http\Controllers\DashboardController;
@@ -13,6 +13,7 @@ use App\Http\Controllers\TransfertController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClientsController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -25,7 +26,7 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -65,11 +66,7 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{id}', [UserController::class, 'show']);
 
 
-    Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::post('/components/transfer-modal', [HomeController::class, 'transfer'])->name('home.transfer');
-    Route::get('/generate-qr/{accountNumber}', [QrCodeController::class, 'generateQrCode'])->name('generate.qr');
-});
+  
 
 
 //routes antoine
@@ -110,10 +107,22 @@ Route::get('/comptes/{compte}/edit', [CompteController::class, 'edit'])->name('m
 Route::post('/comptes/{id}/bloquer', [CompteController::class, 'bloquer'])->name('bloquer.compte');
 // Route::get('/comptes/bloques', [CompteController::class, 'comptes_bloques'])->name('comptes_bloques');
 
-
-
-
-
 // Routes pour les transactions
 Route::resource('transactions', TransfertController::class);
+// routes/clients
+//Route::get('/clients/dashboard', [ClientsController::class, 'dashboard'])->name('clients.dashboard');
+Route::get('/clients/dashboard', [ClientsController::class, 'dashboard'])->name('clients.dashboard');
+
+
+ Route::post('/clients/dashboard', [ClientsController::class, 'transfer'])->name('clients.transfer');
+ Route::get('/qr-code', [VotreControleur::class, 'generateQrCode']);
+
+
+
+ 
+
+
+
+
+
 require __DIR__.'/auth.php';

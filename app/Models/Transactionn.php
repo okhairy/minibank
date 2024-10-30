@@ -1,11 +1,12 @@
 <?php
+// app/Models/Transactionn.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transactions extends Model
+class Transactionn extends Model
 {
     use HasFactory;
 
@@ -13,11 +14,11 @@ class Transactions extends Model
         'user_id',
         'type',
         'montant',
-        'fee',
         'destinataire',
         'sender_name',
     ];
 
+    // Relation avec l'utilisateur
     public function user()
     {
         return $this->belongsTo(User::class);

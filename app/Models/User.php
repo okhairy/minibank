@@ -29,6 +29,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'account_number',
+        'balance',
     ];
 
     /**
@@ -53,7 +55,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    
+    public function transactionns()
+    {
+        return $this->hasMany(Transactionn::class);
+    }
     
 }
