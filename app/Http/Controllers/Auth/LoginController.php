@@ -27,7 +27,7 @@ class LoginController extends Controller
         ]);
 
         // Utilisation du guard pour les distributeurs
-        if (Auth::guard('distributeur')->attempt($credentials)) {
+        if (Auth::guard('')->attempt($credentials)) {
             // Authentification réussie
             return redirect()->intended('dashboard');
         }

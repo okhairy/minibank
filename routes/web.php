@@ -30,7 +30,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})/* ->middleware(['auth', 'verified'])->name('dashboard') */;
 
 // Routes pour le profil
 Route::middleware('auth')->group(function () {
@@ -42,36 +42,36 @@ Route::middleware('auth')->group(function () {
 
 // Routes pour les transactions des distributeurs
 Route::middleware('auth')->group(function () {
-   // Route::post('/crediter', [DistributeurController::class, 'crediterCompte']);
-    Route::post('/crediter', [DistributeurController::class, 'crediterCompte'])->name('crediter');
-    Route::post('/retirer', [DistributeurController::class, 'retirerCompte']);
-    Route::post('/transaction/annuler/{id}', [DistributeurController::class, 'annulerTransaction'])->name('transaction.annuler');
-   //Route::post('/annuler/{id}', [DistributeurController::class, 'annulerTransaction']);
-    //Route::post('/transactions/annuler/{id}', [DistributeurController::class, 'annulerTransaction'])->name('transactions.annuler');
-
-    // routes/web.php
-    Route::get('/distributeur', [DistributeurController::class, 'index'])->middleware('auth');
-    Route::post('/profil/update', [DistributeurController::class, 'update'])->name('profil.update');
-    // routes/web.php
-
-
-    Route::get('/generate-qr/{numero_compte}', [QrCodeController::class, 'generate'])->name('generate.qr');
+   
 
 
 });
+// Route::post('/crediter', [DistributeurController::class, 'crediterCompte']);
+Route::post('/crediter', [DistributeurController::class, 'crediterCompte'])->name('crediter');
+Route::post('/retirer', [DistributeurController::class, 'retirerCompte']);
+Route::post('/transaction/annuler/{id}', [DistributeurController::class, 'annulerTransaction'])->name('transaction.annuler');
+//Route::post('/annuler/{id}', [DistributeurController::class, 'annulerTransaction']);
+//Route::post('/transactions/annuler/{id}', [DistributeurController::class, 'annulerTransaction'])->name('transactions.annuler');
 
+// routes/web.php
+Route::get('/distributeur', [DistributeurController::class, 'index'])/* ->middleware('auth') */;
+Route::post('/profil/update', [DistributeurController::class, 'update'])->name('profil.update');
+// routes/web.php
+
+
+Route::get('/generate-qr/{numero_compte}', [QrCodeController::class, 'generate'])->name('generate.qr');
 // Auth routes
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{id}', [UserController::class, 'show']);
 
 
     Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::post('/components/transfer-modal', [HomeController::class, 'transfer'])->name('home.transfer');
-    Route::get('/generate-qr/{accountNumber}', [QrCodeController::class, 'generateQrCode'])->name('generate.qr');
+   
 });
 
-
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::post('/components/transfer-modal', [HomeController::class, 'transfer'])->name('home.transfer');
+Route::get('/generate-qr/{accountNumber}', [QrCodeController::class, 'generateQrCode'])->name('generate.qr');
 //routes antoine
 
 Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
